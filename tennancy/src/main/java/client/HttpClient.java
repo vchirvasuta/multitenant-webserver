@@ -12,8 +12,6 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
-import io.netty.handler.codec.http.cookie.DefaultCookie;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -66,9 +64,6 @@ public final class HttpClient {
             request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
             request.headers().set("TENANT", TENANT_NAME);
 
-            // Set some example cookies.
-            request.headers().set(HttpHeaderNames.COOKIE,
-                                  ClientCookieEncoder.STRICT.encode(new DefaultCookie("my-cookie", "foo"), new DefaultCookie("another-cookie", "bar")));
 
             // Send the HTTP request.
             ch.writeAndFlush(request);

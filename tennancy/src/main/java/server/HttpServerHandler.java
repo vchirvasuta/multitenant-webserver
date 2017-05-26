@@ -68,19 +68,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
                 buf.append("\r\n");
             }
 
-            QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.uri());
-            Map<String, List<String>> params = queryStringDecoder.parameters();
-            if (!params.isEmpty()) {
-                for (Entry<String, List<String>> p : params.entrySet()) {
-                    String key = p.getKey();
-                    List<String> vals = p.getValue();
-                    for (String val : vals) {
-                        buf.append("PARAM: ").append(key).append(" = ").append(val).append("\r\n");
-                    }
-                }
-                buf.append("\r\n");
-            }
-
             appendDecoderResult(buf, request);
         }
 
@@ -144,22 +131,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
             // Add keep alive header as per:
             // - http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#Connection
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-        }
-
-        // Encode the cookie.
-        String cookieString = request.headers().get(HttpHeaderNames.COOKIE);
-        if (cookieString != null) {
-            Set<Cookie> cookies = ServerCookieDecoder.STRICT.decode(cookieString);
-            if (!cookies.isEmpty()) {
-                // Reset the cookies if necessary.
-                for (Cookie cookie : cookies) {
-                    response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookie));
-                }
-            }
-        } else {
-            // Browser sent no cookie.  Add some.
-            response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode("key1", "value1"));
-            response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode("key2", "value2"));
         }
 
         // Write the response.
